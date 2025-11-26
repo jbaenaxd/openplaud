@@ -95,13 +95,21 @@ export async function POST(
             response_format: "verbose_json",
         });
 
+        type VerboseTranscription = {
+            text: string;
+            language?: string | null;
+        };
+
         // Extract text and detected language from response
         const transcriptionText =
             typeof transcription === "string"
                 ? transcription
-                : (transcription as any).text;
+                : (transcription as VerboseTranscription).text;
 
-        const detectedLanguage = (transcription as any).language || null;
+        const detectedLanguage =
+            typeof transcription === "string"
+                ? null
+                : (transcription as VerboseTranscription).language || null;
 
         // Save transcription
         const [existingTranscription] = await db

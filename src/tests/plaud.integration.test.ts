@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import { PlaudClient } from "@/lib/plaud/client";
+import { PlaudClient } from "../lib/plaud/client";
 
 const bearerToken = process.env.PLAUD_BEARER_TOKEN;
 const hasToken = typeof bearerToken === "string" && bearerToken.length > 0;

@@ -1,9 +1,8 @@
-import { and, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { recordings, transcriptions, userSettings } from "@/db/schema";
 import { auth } from "@/lib/auth";
-import { createUserStorageProvider } from "@/lib/storage/factory";
 
 // GET - Export recordings in specified format
 export async function GET(request: Request) {

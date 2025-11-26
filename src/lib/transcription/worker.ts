@@ -36,7 +36,21 @@ self.addEventListener("message", async (event) => {
             self.postMessage({ type: "progress", status: "transcribing" });
 
             // Perform transcription
-            const result = await pipe(audioData, {
+            type TranscriberResult = {
+                text: string;
+                chunks?: { language?: string }[];
+            };
+
+            type Transcriber = (
+                input: unknown,
+                options: {
+                    return_timestamps: boolean;
+                    chunk_length_s: number;
+                    stride_length_s: number;
+                },
+            ) => Promise<TranscriberResult>;
+
+            const result = await (pipe as Transcriber)(audioData, {
                 return_timestamps: false,
                 chunk_length_s: 30,
                 stride_length_s: 5,

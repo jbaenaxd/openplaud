@@ -1,9 +1,8 @@
-import { and, eq, lt } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { recordings, storageConfig } from "@/db/schema";
 import { auth } from "@/lib/auth";
-import { createUserStorageProvider } from "@/lib/storage/factory";
 
 // GET - Get storage usage and info
 export async function GET(request: Request) {

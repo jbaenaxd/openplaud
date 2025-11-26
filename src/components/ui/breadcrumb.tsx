@@ -1,5 +1,6 @@
 "use client";
 
+import { Slot } from "@radix-ui/react-slot";
 import { ChevronRight } from "lucide-react";
 import * as React from "react";
 import { cn } from "@/lib/utils";
@@ -31,27 +32,26 @@ function BreadcrumbItem({ className, ...props }: React.ComponentProps<"li">) {
     );
 }
 
-function BreadcrumbLink({
-    className,
-    asChild = false,
-    ...props
-}: React.ComponentProps<"a"> & {
-    asChild?: boolean;
-}) {
-    const Comp = asChild ? React.Fragment : "a";
+const BreadcrumbLink = React.forwardRef<
+    React.ElementRef<"a">,
+    React.ComponentPropsWithoutRef<"a"> & {
+        asChild?: boolean;
+    }
+>(({ className, asChild = false, ...props }, ref) => {
+    const Comp = asChild ? Slot : "a";
     return (
         <Comp
+            ref={ref}
             className={cn("transition-colors hover:text-foreground", className)}
-            {...(asChild ? {} : props)}
+            {...props}
         />
     );
-}
+});
+BreadcrumbLink.displayName = "BreadcrumbLink";
 
 function BreadcrumbPage({ className, ...props }: React.ComponentProps<"span">) {
     return (
         <span
-            role="link"
-            aria-disabled="true"
             aria-current="page"
             className={cn("font-normal text-foreground", className)}
             {...props}

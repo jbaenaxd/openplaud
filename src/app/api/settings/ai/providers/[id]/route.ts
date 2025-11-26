@@ -78,7 +78,14 @@ export async function PUT(
             }
 
             // Build update object
-            const updateData: any = {
+            const updateData: {
+                baseUrl: string | null;
+                defaultModel: string | null;
+                isDefaultTranscription: boolean;
+                isDefaultEnhancement: boolean;
+                updatedAt: Date;
+                apiKey?: string;
+            } = {
                 baseUrl: baseUrl || null,
                 defaultModel: defaultModel || null,
                 isDefaultTranscription: isDefaultTranscription || false,
@@ -128,7 +135,7 @@ export async function DELETE(
         const { id } = await params;
 
         // Verify ownership and delete
-        const result = await db
+        await db
             .delete(apiCredentials)
             .where(
                 and(

@@ -1,9 +1,8 @@
-import { createCipheriv, createDecipheriv, randomBytes } from "crypto";
+import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
 import { env } from "./env";
 
 const ALGORITHM = "aes-256-gcm";
 const IV_LENGTH = 16;
-const AUTH_TAG_LENGTH = 16;
 const KEY_LENGTH = 32;
 
 /**
@@ -11,9 +10,9 @@ const KEY_LENGTH = 32;
  */
 function getEncryptionKey(): Buffer {
     const keyHex = env.ENCRYPTION_KEY;
-    if (keyHex.length !== 64) {
+    if (!keyHex || keyHex.length !== 64) {
         throw new Error(
-            "ENCRYPTION_KEY must be exactly 64 hex characters (32 bytes)",
+            "ENCRYPTION_KEY must be set and be exactly 64 hex characters (32 bytes)",
         );
     }
     return Buffer.from(keyHex, "hex");

@@ -5,9 +5,10 @@ import {
     describe,
     expect,
     it,
+    type Mock,
     vi,
 } from "vitest";
-import { PlaudClient } from "@/lib/plaud/client";
+import { PlaudClient } from "../lib/plaud/client";
 
 const originalFetch = global.fetch;
 
@@ -22,6 +23,7 @@ afterAll(() => {
 describe("PlaudClient", () => {
     let client: PlaudClient;
     const mockBearerToken = "test-bearer-token";
+    const mockFetch = fetch as unknown as Mock;
 
     beforeEach(() => {
         client = new PlaudClient(mockBearerToken);
@@ -49,7 +51,7 @@ describe("PlaudClient", () => {
                 ],
             };
 
-            (fetch as any).mockResolvedValueOnce({
+            mockFetch.mockResolvedValueOnce({
                 ok: true,
                 json: () => Promise.resolve(mockResponse),
             });
@@ -78,7 +80,7 @@ describe("PlaudClient", () => {
                 data_file_list: [],
             };
 
-            (fetch as any).mockResolvedValueOnce({
+            mockFetch.mockResolvedValueOnce({
                 ok: true,
                 json: () => Promise.resolve(mockResponse),
             });
@@ -100,7 +102,7 @@ describe("PlaudClient", () => {
                 data_file_list: [],
             };
 
-            (fetch as any).mockResolvedValueOnce({
+            mockFetch.mockResolvedValueOnce({
                 ok: true,
                 json: () => Promise.resolve(mockResponse),
             });
@@ -125,7 +127,7 @@ describe("PlaudClient", () => {
                 },
             };
 
-            (fetch as any).mockResolvedValueOnce({
+            mockFetch.mockResolvedValueOnce({
                 ok: true,
                 json: () => Promise.resolve(mockResponse),
             });
@@ -148,7 +150,7 @@ describe("PlaudClient", () => {
                 },
             };
 
-            (fetch as any).mockResolvedValueOnce({
+            mockFetch.mockResolvedValueOnce({
                 ok: true,
                 json: () => Promise.resolve(mockResponse),
             });
@@ -164,7 +166,7 @@ describe("PlaudClient", () => {
 
     describe("testConnection", () => {
         it("should return true when connection is successful", async () => {
-            (fetch as any).mockResolvedValueOnce({
+            mockFetch.mockResolvedValueOnce({
                 ok: true,
                 json: () =>
                     Promise.resolve({ code: 0, msg: "success", data: {} }),
@@ -175,7 +177,7 @@ describe("PlaudClient", () => {
         });
 
         it("should return false when connection fails", async () => {
-            (fetch as any).mockRejectedValueOnce(new Error("Network error"));
+            mockFetch.mockRejectedValueOnce(new Error("Network error"));
 
             const result = await client.testConnection();
             expect(result).toBe(false);
@@ -189,7 +191,7 @@ describe("PlaudClient", () => {
                 msg: "Invalid request",
             };
 
-            (fetch as any).mockResolvedValueOnce({
+            mockFetch.mockResolvedValueOnce({
                 ok: false,
                 statusText: "Bad Request",
                 json: () => Promise.resolve(errorResponse),
@@ -201,7 +203,7 @@ describe("PlaudClient", () => {
         });
 
         it("should throw error when fetch fails", async () => {
-            (fetch as any).mockRejectedValueOnce(new Error("Network error"));
+            mockFetch.mockRejectedValueOnce(new Error("Network error"));
 
             await expect(client.listDevices()).rejects.toThrow("Network error");
         });

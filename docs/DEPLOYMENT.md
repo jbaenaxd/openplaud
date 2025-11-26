@@ -53,7 +53,7 @@ openssl rand -hex 32
 Create `.env` file:
 
 ```bash
-cp .env.example .env
+cp .env.example .env.local
 ```
 
 Edit `.env` with your values:
@@ -368,7 +368,7 @@ mkdir -p $BACKUP_DIR
 docker compose exec db pg_dump -U postgres openplaud | gzip > $BACKUP_DIR/db.sql.gz
 
 # Environment config
-cp .env $BACKUP_DIR/env.backup
+cp .env.local $BACKUP_DIR/env.backup
 
 # Docker volumes (if using local storage)
 docker run --rm -v openplaud_audio:/data -v $BACKUP_DIR:/backup alpine tar czf /backup/audio.tar.gz /data

@@ -13,8 +13,8 @@ cd openplaud
 pnpm install
 
 # Set up environment
-cp .env.example .env
-# Edit .env with your values
+cp .env.example .env.local
+# Edit .env.local with your values
 
 # Create database
 createdb openplaud

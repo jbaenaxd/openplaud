@@ -3,16 +3,8 @@ set -e
 
 echo "🚀 Starting OpenPlaud..."
 
-# Run migrations
 echo "⏳ Running database migrations..."
-if node src/db/migrate.js; then
-  echo "✅ Migrations completed successfully"
-else
-  echo "❌ Migration failed"
-  exit 1
-fi
+bun src/db/migrate.ts
 
-# Start the application
 echo "🚀 Starting application..."
 exec "$@"
-

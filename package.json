@@ -26,8 +26,7 @@
     ],
     "scripts": {
         "dev": "next dev",
-        "build": "pnpm build:migrate && next build",
-        "build:migrate": "tsc src/db/migrate.ts --outDir src/db --module commonjs --target es2020 --esModuleInterop --resolveJsonModule --skipLibCheck",
+        "build": "next build",
         "start": "next start",
         "test": "vitest run",
         "test:watch": "vitest",

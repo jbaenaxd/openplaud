@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { pollTelegramUpdates } from "@/lib/telegram/bot";
 import { env } from "@/lib/env";
+import { pollTelegramUpdates } from "@/lib/telegram/bot";
 
 // Track polling status globally in this runtime
 let isPollingStarted = false;
@@ -16,7 +16,7 @@ export async function GET() {
 
     // Start polling in background (don't await)
     isPollingStarted = true;
-    pollTelegramUpdates().catch(err => {
+    pollTelegramUpdates().catch((err) => {
         console.error("Critical Telegram Polling Error:", err);
         isPollingStarted = false;
     });

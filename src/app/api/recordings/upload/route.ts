@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
 import { nanoid } from "nanoid";
+import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { recordings } from "@/db/schema";
 import { auth } from "@/lib/auth";
-import { createUserStorageProvider } from "@/lib/storage/factory";
 import { env } from "@/lib/env";
+import { createUserStorageProvider } from "@/lib/storage/factory";
 
 export async function POST(request: Request) {
     try {
@@ -32,9 +32,18 @@ export async function POST(request: Request) {
         // Validate file type
         if (!file.type.startsWith("audio/")) {
             // Check extension as fallback
-            const validExtensions = ['.mp3', '.wav', '.m4a', '.aac', '.ogg', '.flac'];
-            const hasValidExtension = validExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
-            
+            const validExtensions = [
+                ".mp3",
+                ".wav",
+                ".m4a",
+                ".aac",
+                ".ogg",
+                ".flac",
+            ];
+            const hasValidExtension = validExtensions.some((ext) =>
+                file.name.toLowerCase().endsWith(ext),
+            );
+
             if (!hasValidExtension) {
                 return NextResponse.json(
                     { error: "Only audio files are allowed" },
@@ -44,26 +53,26 @@ export async function POST(request: Request) {
         }
 
         const buffer = Buffer.from(await file.arrayBuffer());
-        const storageProvider = await createUserStorageProvider(session.user.id);
-        
+        const storageProvider = await createUserStorageProvider(
+            session.user.id,
+        );
+
         // Generate a unique ID for the recording
         const recordingId = nanoid();
         const timestamp = new Date();
-        
-        // Use a standard naming convention for uploaded files
-        const fileExtension = file.name.split('.').pop() || 'mp3';
+
         const storageKey = `manual/${session.user.id}/${timestamp.getTime()}-${file.name}`;
-        
+
         // Upload to storage
         const storagePath = await storageProvider.uploadFile(
             storageKey,
             buffer,
-            file.type || 'audio/mpeg'
+            file.type || "audio/mpeg",
         );
 
         // Estimate duration if possible (optional, set to 0 for now as it requires parsing audio)
         // In a real scenario, we might use a library like music-metadata to get actual duration
-        const duration = 0; 
+        const duration = 0;
 
         // Register in database
         const [newRecording] = await db
@@ -86,9 +95,9 @@ export async function POST(request: Request) {
             })
             .returning();
 
-        return NextResponse.json({ 
-            success: true, 
-            recording: newRecording 
+        return NextResponse.json({
+            success: true,
+            recording: newRecording,
         });
     } catch (error) {
         console.error("Error uploading recording:", error);

@@ -15,6 +15,8 @@ export function OnboardingForm() {
     const [step, setStep] = useState<Step>("plaud");
     const [bearerToken, setBearerToken] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter();
+
     const handleSkip = async () => {
         setIsLoading(true);
         try {
@@ -36,8 +38,7 @@ export function OnboardingForm() {
         }
     };
 
-    return (
-        <Panel className="w-full max-w-2xl space-y-6">
+    const handlePlaudSetup = async () => {
         if (!bearerToken.trim()) {
             toast.error("Please enter your bearer token");
             return;

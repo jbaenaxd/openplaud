@@ -15,9 +15,29 @@ export function OnboardingForm() {
     const [step, setStep] = useState<Step>("plaud");
     const [bearerToken, setBearerToken] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    const router = useRouter();
+    const handleSkip = async () => {
+        setIsLoading(true);
+        try {
+            const response = await fetch("/api/settings/user", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ onboardingCompleted: true }),
+            });
 
-    const handlePlaudSetup = async () => {
+            if (!response.ok) throw new Error("Failed to skip");
+
+            toast.success("Onboarding skipped");
+            router.push("/dashboard");
+            router.refresh();
+        } catch {
+            toast.error("Failed to update settings");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <Panel className="w-full max-w-2xl space-y-6">
         if (!bearerToken.trim()) {
             toast.error("Please enter your bearer token");
             return;
@@ -107,6 +127,21 @@ export function OnboardingForm() {
                     >
                         {isLoading ? "Connecting..." : "Connect Device"}
                     </MetalButton>
+
+                    <div className="relative flex justify-center text-xs uppercase my-4">
+                        <span className="bg-background px-2 text-muted-foreground">
+                            Or
+                        </span>
+                    </div>
+
+                    <button
+                        type="button"
+                        onClick={handleSkip}
+                        disabled={isLoading}
+                        className="w-full text-sm text-muted-foreground hover:text-foreground transition-colors py-2"
+                    >
+                        Skip for now
+                    </button>
                 </div>
             )}
 

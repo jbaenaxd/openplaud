@@ -1,8 +1,8 @@
 "use client";
 
-import { Mic, RefreshCw, Settings } from "lucide-react";
+import { Mic, RefreshCw, Settings, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { OnboardingDialog } from "@/components/onboarding-dialog";
 import { SettingsDialog } from "@/components/settings-dialog";
@@ -39,6 +39,8 @@ export function Workstation({ recordings, transcriptions }: WorkstationProps) {
     const [isTranscribing, setIsTranscribing] = useState(false);
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [onboardingOpen, setOnboardingOpen] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const [providers, setProviders] = useState<
         Array<{
             id: string;
@@ -64,6 +66,17 @@ export function Workstation({ recordings, transcriptions }: WorkstationProps) {
     const currentTranscription = currentRecording
         ? transcriptions.get(currentRecording.id)
         : undefined;
+
+    useEffect(() => {
+        const triggerTelegramPoll = async () => {
+            try {
+                await fetch("/api/telegram/poll");
+            } catch {
+                // ignore
+            }
+        };
+        triggerTelegramPoll();
+    }, []);
 
     useEffect(() => {
         getSyncSettings().then(setSyncSettings);
@@ -139,6 +152,37 @@ export function Workstation({ recordings, transcriptions }: WorkstationProps) {
         await manualSync();
     }, [manualSync]);
 
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setIsUploading(true);
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+            const response = await fetch("/api/recordings/upload", {
+                method: "POST",
+                body: formData,
+            });
+
+            if (response.ok) {
+                toast.success("Recording uploaded successfully");
+                router.refresh();
+            } else {
+                const error = await response.json();
+                toast.error(error.error || "Upload failed");
+            }
+        } catch {
+            toast.error("Failed to upload recording");
+        } finally {
+            setIsUploading(false);
+            if (fileInputRef.current) {
+                fileInputRef.current.value = "";
+            }
+        }
+    };
+
     useEffect(() => {
         if (settingsOpen) {
             fetch("/api/settings/ai/providers")
@@ -194,6 +238,32 @@ export function Workstation({ recordings, transcriptions }: WorkstationProps) {
                                 lastSyncResult={lastSyncResult}
                                 className="hidden md:flex"
                             />
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                onChange={handleFileChange}
+                                accept="audio/*"
+                                className="hidden"
+                            />
+                            <Button
+                                onClick={() => fileInputRef.current?.click()}
+                                disabled={isUploading}
+                                variant="outline"
+                                size="sm"
+                                className="h-9"
+                            >
+                                {isUploading ? (
+                                    <>
+                                        <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                                        Uploading...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Upload className="w-4 h-4 mr-2" />
+                                        Upload
+                                    </>
+                                )}
+                            </Button>
                             <Button
                                 onClick={handleSync}
                                 disabled={isAutoSyncing}

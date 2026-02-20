@@ -47,6 +47,8 @@ const envSchema = z.object({
                     'SMTP_FROM must be an email address (e.g., "user@example.com") or formatted as "Name <user@example.com>"',
             },
         ),
+    TELEGRAM_BOT_TOKEN: z.string().optional(),
+    TELEGRAM_ALLOWED_USERS: z.string().optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;
@@ -78,6 +80,8 @@ function validateEnv(): Env {
             SMTP_USER: process.env.SMTP_USER,
             SMTP_PASSWORD: process.env.SMTP_PASSWORD,
             SMTP_FROM: process.env.SMTP_FROM,
+            TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN,
+            TELEGRAM_ALLOWED_USERS: process.env.TELEGRAM_ALLOWED_USERS,
         });
 
         // In runtime (dev/prod servers), we require a strong encryption key.

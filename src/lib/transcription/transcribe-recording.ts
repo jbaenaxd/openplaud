@@ -171,7 +171,7 @@ export async function transcribeRecording(
                                 .where(eq(plaudConnections.userId, userId))
                                 .limit(1);
 
-                            if (connection) {
+                            if (connection && recording.plaudFileId) {
                                 const plaudClient = await createPlaudClient(
                                     connection.bearerToken,
                                 );
